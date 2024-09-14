@@ -1,4 +1,4 @@
-Simple disasembler
+Simple disassembler
 
 ## Usage:
 ```Python
