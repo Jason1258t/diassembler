@@ -1,7 +1,7 @@
 Simple disasembler
 
 ## Usage:
-```
+```Python
 from disassembler import Disassembler
 
 da = Disassembler()
