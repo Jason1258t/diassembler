@@ -38,6 +38,14 @@ instructions = [
             AVRParameter(name="K", constraints="0< <255")
         ]
     ),
+    AVRInstruction(
+        name="sbic P, b",
+        mask="1001 1001 PPPP Pbbb",
+        parameters=[
+            AVRParameter(name="P"),
+            AVRParameter(name="b")
+        ]
+    ),
     # LDI - загрузка немедленного значения в регистр
     AVRInstruction(
         name="ldi Rd, K",
@@ -67,7 +75,7 @@ instructions = [
         name="brne k",
         mask="1111 01kk kkkk k001",
         parameters=[
-            AVRParameter(name="k",  options="signed")
+            AVRParameter(name="k", options="signed")
         ]
     ),
     # BRNE - условный переход
@@ -298,6 +306,78 @@ instructions = [
     AVRInstruction(
         name="cli",
         mask="1001 0100 1111 1000",
+        parameters=[]
+    ),
+    AVRInstruction(
+        name="nop",
+        mask="0000 0000 0000 0000",
+        parameters=[]
+    ),
+    AVRInstruction(
+        name="mul Rd, Rr",
+        mask="1001 11rd dddd rrrr",
+        parameters=[
+            AVRParameter(name="Rd", constraints="0<= <32"),
+            AVRParameter(name="Rr", constraints="0<= <32")
+        ]
+    ),
+
+    # MULS - умножение знаковых 8-битных значений
+    AVRInstruction(
+        name="muls Rd, Rr",
+        mask="0000 0010 dddd rrrr",
+        parameters=[
+            AVRParameter(name="Rd", constraints="16<= <32"),
+            AVRParameter(name="Rr", constraints="16<= <32")
+        ]
+    ),
+
+    # LSL - логический сдвиг влево
+    AVRInstruction(
+        name="lsl Rd",
+        mask="0000 11dd dddd dddd",
+        parameters=[
+            AVRParameter(name="Rd", constraints="0<= <32")
+        ]
+    ),
+
+
+    # PUSH - сохранение регистра в стек
+    AVRInstruction(
+        name="push Rd",
+        mask="1001 001d dddd 1111",
+        parameters=[
+            AVRParameter(name="Rd", constraints="0<= <32")
+        ]
+    ),
+
+    # POP - восстановление регистра из стека
+    AVRInstruction(
+        name="pop Rd",
+        mask="1001 000d dddd 1111",
+        parameters=[
+            AVRParameter(name="Rd", constraints="0<= <32")
+        ]
+    ),
+
+    # BREAK - остановка программы
+    AVRInstruction(
+        name="break",
+        mask="1001 0101 1001 1000",
+        parameters=[]
+    ),
+
+    # SLEEP - режим сна
+    AVRInstruction(
+        name="sleep",
+        mask="1001 0101 1000 1000",
+        parameters=[]
+    ),
+
+    # WDR - сброс сторожевого таймера
+    AVRInstruction(
+        name="wdr",
+        mask="1001 0101 1010 1000",
         parameters=[]
     )
 ]
