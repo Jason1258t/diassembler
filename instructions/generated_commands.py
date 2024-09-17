@@ -34,7 +34,7 @@ instructions = [
         name="sbci Rd, K",
         mask="0100 KKKK dddd KKKK",
         parameters=[
-            AVRParameter(name="Rd", constraints="0< <31"),
+            AVRParameter(name="Rd", constraints="16< <31"),
             AVRParameter(name="K", constraints="0< <255")
         ]
     ),
