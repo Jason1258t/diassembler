@@ -49,22 +49,8 @@ class Disassembler:
         return c, words
 
     @staticmethod
-    def _get_original_bytes_from_words(words):
-        string_bytes = []
-        for i in range(3, len(words), 4):
-            string_bytes.append(hex(int(words[i - 1], 2))[2:] + hex(int(words[i], 2))[2:])
-            string_bytes.append(hex(int(words[i - 3], 2))[2:] + hex(int(words[i - 2], 2))[2:])
-
-        if len(string_bytes) == 2:
-            string_bytes.append('  ')
-            string_bytes.append('  ')
-
-        string_bytes.append('    ')
-
-        return ' '.join(string_bytes)
-
-    def _format_command_out(self, address, words, comm, parameters):
+    def _format_command_out(address, words, comm, parameters):
         address = hex(address)[2:].zfill(2)
-        orig_bytes = self._get_original_bytes_from_words(words)
+        orig_bytes = Packet.get_original_bytes_from_words(words)
         command_out = comm.write_with_parameters(parameters)
         return address + ': ' + orig_bytes + ' ' + command_out
