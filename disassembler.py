@@ -24,7 +24,6 @@ class Disassembler:
         commands = []
         data_bytes = packet.get_data_binary()[self._next_packet_offset:]
         if self._next_packet_offset != 0: self._next_packet_offset = 0
-        print(data_bytes, packet.initial_string())
         address = int(packet.start_address, 16)
         while len(data_bytes) != 0:
             try:
