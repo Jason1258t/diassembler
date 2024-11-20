@@ -50,3 +50,18 @@ class Packet:
                 out_data.append(bin(int(j, 16))[2:].zfill(4))
 
         print(*out_data)
+
+    @staticmethod
+    def get_original_bytes_from_words(words):
+        string_bytes = []
+        for i in range(3, len(words), 4):
+            string_bytes.append(hex(int(words[i - 1], 2))[2:] + hex(int(words[i], 2))[2:])
+            string_bytes.append(hex(int(words[i - 3], 2))[2:] + hex(int(words[i - 2], 2))[2:])
+
+        if len(string_bytes) == 2:
+            string_bytes.append('  ')
+            string_bytes.append('  ')
+
+        string_bytes.append('    ')
+
+        return ' '.join(string_bytes)
