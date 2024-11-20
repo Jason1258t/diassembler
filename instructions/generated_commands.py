@@ -399,7 +399,7 @@ instructions = [
         ]
     ),
     AVRInstruction(
-        name="cpc Rd,Rr",
+        name="cpc Rd, Rr",
         mask="0000 01rd dddd rrrr",
         parameters=[
             AVRParameter(name="Rr"),

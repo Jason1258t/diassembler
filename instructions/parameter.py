@@ -39,12 +39,19 @@ class AVRParameter:
         '0x2c': 'SPCR',
         '0x3d': 'SPL',
         '0x3e': 'SPH',
-        '0x3f': 'SREG'
+        '0x3f': 'SREG',
+        'r26': 'XL',
+        'r27': 'XH',
+        'r28': 'YL',
+        'r29': 'YH',
+        'r30': 'ZL',
+        'r31': 'ZH',
     }
 
     def _format_value(self, value, add_symbols):
         if self.name[0] == 'R':
-            return 'r' + str(value)
+            v = 'r' + str(value)
+            return v if v not in self.special_registers.keys() else self.special_registers[v]
 
         return add_symbols + (hex(value) if value > 9 and self.options != 'signed' else str(value))
 
