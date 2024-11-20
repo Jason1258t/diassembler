@@ -21,11 +21,31 @@ class AVRParameter:
 
         value += self._get_constraints_adding()
 
+        if hex(value) in self.special_registers.keys() and self.name in 'qwertyuiopasdfghjzxcvbnm'.upper():
+            return self.special_registers[hex(value)]
+
         return self._format_value(value, add_symbols)
+
+    special_registers = {
+        '0x3': 'PINB',
+        '0x4': 'DDRB',
+        '0x5': 'PORTC',
+        '0x6': 'PINC',
+        '0x7': 'DDRC',
+        '0x8': 'PORTC',
+        '0x9': 'PIND',
+        '0xa': 'DDRD',
+        '0xc': 'PORTD',
+        '0x2c': 'SPCR',
+        '0x3d': 'SPL',
+        '0x3e': 'SPH',
+        '0x3f': 'SREG'
+    }
 
     def _format_value(self, value, add_symbols):
         if self.name[0] == 'R':
             return 'r' + str(value)
+
         return add_symbols + (hex(value) if value > 9 and self.options != 'signed' else str(value))
 
     def _get_constraints_adding(self):
