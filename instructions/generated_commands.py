@@ -34,7 +34,7 @@ instructions = [
         name="sbci Rd, K",
         mask="0100 KKKK dddd KKKK",
         parameters=[
-            AVRParameter(name="Rd", constraints="0< <31"),
+            AVRParameter(name="Rd", constraints="16< <31"),
             AVRParameter(name="K", constraints="0< <255")
         ]
     ),
@@ -107,10 +107,19 @@ instructions = [
     # IN - ввод из порта
     AVRInstruction(
         name="in Rd, P",
-        mask="1011 0PPr rrrr PPPP",
+        mask="1011 0PPd dddd PPPP",
         parameters=[
             AVRParameter(name="Rd", constraints="0< <32"),
             AVRParameter(name="P", constraints="0<= <=63")
+        ]
+    ),
+    # IN - ввод из порта
+    AVRInstruction(
+        name="sts k, Rr",
+        mask="1001 001r rrrr 0000 kkkk kkkk kkkk kkkk",
+        parameters=[
+            AVRParameter(name="Rr", constraints="0< <32"),
+            AVRParameter(name="k", constraints="0< <=65535")
         ]
     ),
     # RJMP - относительный переход
@@ -255,6 +264,60 @@ instructions = [
             AVRParameter(name="K", constraints="0<= <=255", options="none")
         ]
     ),
+    # SBR - установка битов в регистре
+    AVRInstruction(
+        name="sbrs Rr,b",
+        mask="1111 111r rrrr obbb",
+        parameters=[
+            AVRParameter(name="Rr", constraints="0< <32", options="none"),
+            AVRParameter(name="b", constraints="0<= <=7", options="none")
+        ]
+    ),
+    # CPSE - сравнение регистров с пропуском следующей инструкции
+    AVRInstruction(
+        name="cpse Rd, Rr",
+        mask="0001 00rd dddd rrrr",
+        parameters=[
+            AVRParameter(name="Rd", constraints="0< <32"),
+            AVRParameter(name="Rr", constraints="0< <32")
+        ]
+    ),
+
+    # LDS - загрузка данных из памяти в регистр
+    AVRInstruction(
+        name="lds Rd, k",
+        mask="1001 000d dddd 0000 kkkk kkkk kkkk kkkk",
+        parameters=[
+            AVRParameter(name="Rd", constraints="0< <32"),
+            AVRParameter(name="k", constraints="0<= <=65535")
+        ]
+    ),
+
+    # BRCS - переход, если установлен флаг переноса (C = 1)
+    AVRInstruction(
+        name="brcs k",
+        mask="1111 00kk kkkk k000",
+        parameters=[
+            AVRParameter(name="k", options="signed")
+        ]
+    ),
+
+    # SBR - установка битов в регистре
+    AVRInstruction(
+        name="push Rr",
+        mask="1001 001r rrrr 1111",
+        parameters=[
+            AVRParameter(name="Rr", constraints="0< <32", options="none"),
+        ]
+    ),
+    # SBR - установка битов в регистре
+    AVRInstruction(
+        name="rcall k",
+        mask="1101 kkkk kkkk kkkk",
+        parameters=[
+            AVRParameter(name="k", constraints="0< <32", options="address"),
+        ]
+    ),
     # CBR - очистка битов в регистре
     AVRInstruction(
         name="cbr Rd, K",
@@ -321,6 +384,28 @@ instructions = [
             AVRParameter(name="Rr", constraints="0<= <32")
         ]
     ),
+    AVRInstruction(
+        name="lpm Rd, Z+",
+        mask="1001 000d dddd 0101",
+        parameters=[
+            AVRParameter(name="Rd"),
+        ]
+    ),
+    AVRInstruction(
+        name="st X+, Rr",
+        mask="1001 001r rrrr 1101",
+        parameters=[
+            AVRParameter(name="Rr"),
+        ]
+    ),
+    AVRInstruction(
+        name="cpc Rd,Rr",
+        mask="0000 01rd dddd rrrr",
+        parameters=[
+            AVRParameter(name="Rr"),
+            AVRParameter(name="Rd"),
+        ]
+    ),
 
     # MULS - умножение знаковых 8-битных значений
     AVRInstruction(
@@ -340,7 +425,6 @@ instructions = [
             AVRParameter(name="Rd", constraints="0<= <32")
         ]
     ),
-
 
     # PUSH - сохранение регистра в стек
     AVRInstruction(
@@ -379,7 +463,217 @@ instructions = [
         name="wdr",
         mask="1001 0101 1010 1000",
         parameters=[]
-    )
+    ),
+    # LD (X) - Загрузка из памяти по адресу регистра X
+    AVRInstruction(
+        name="ld Rd, X",
+        mask="1001 000d dddd 1100",
+        parameters=[
+            AVRParameter(name="Rd", constraints="0<= <32"),
+        ]
+    ),
+
+    # ST (X) - Запись в память по адресу регистра X
+    AVRInstruction(
+        name="st X, Rr",
+        mask="1001 001r rrrr 1100",
+        parameters=[
+            AVRParameter(name="Rr", constraints="0<= <32"),
+        ]
+    ),
+
+    # LD (Y) с постинкрементом - Загрузка из памяти по адресу регистра Y с увеличением
+    AVRInstruction(
+        name="ld Rd, Y+",
+        mask="1001 000d dddd 1001",
+        parameters=[
+            AVRParameter(name="Rd", constraints="0<= <32"),
+        ]
+    ),
+    AVRInstruction(
+        name="ld Rd,Y",
+        mask="1000 000d dddd 1000",
+        parameters=[
+            AVRParameter(name="Rd", constraints="0<= <32"),
+        ]
+    ),
+    AVRInstruction(
+        name="ld Rd,Z",
+        mask="1000 000d dddd 0000",
+        parameters=[
+            AVRParameter(name="Rd", constraints="0<= <32"),
+        ]
+    ),
+
+    # LDD (Z+) - Загрузка из памяти по адресу Z с увеличением
+    AVRInstruction(
+        name="ldd Rd, Z+",
+        mask="1001 000d dddd 0001",
+        parameters=[
+            AVRParameter(name="Rd", constraints="0<= <32"),
+        ]
+    ),
+    # LDD (Z+) - Загрузка из памяти по адресу Z с увеличением
+    AVRInstruction(
+        name="ldd Rd, Z+q",
+        mask="10q0 qq0d dddd 0qqq",
+        parameters=[
+            AVRParameter(name="Rd", constraints="0<= <32"),
+            AVRParameter(name="q"),
+        ]
+    ),
+    # LDD (Z+) - Загрузка из памяти по адресу Z с увеличением
+    AVRInstruction(
+        name="std Z+q, Rr",
+        mask="10q0 qq1r rrrr 0qqq",
+        parameters=[
+            AVRParameter(name="Rr", constraints="0<= <32"),
+            AVRParameter(name="q"),
+        ]
+    ),
+    # LDD (Z+) - Загрузка из памяти по адресу Z с увеличением
+    AVRInstruction(
+        name="reti",
+        mask="1001 0101 0001 1000",
+        parameters=[]
+    ),
+    AVRInstruction(
+        name="ld Rd,Z+",
+        mask="1001 000d dddd 0001",
+        parameters=[
+            AVRParameter(name="Rd", constraints="0<= <32"),
+        ]
+    ),
+    # ST (Z+) - Запись в память по адресу Z с увеличением
+    AVRInstruction(
+        name="st Z+, Rr",
+        mask="1001 001r rrrr 0001",
+        parameters=[
+            AVRParameter(name="Rr", constraints="0<= <32"),
+        ]
+    ),
+
+    # ST (Z) - Запись в память по адресу регистра Z
+    AVRInstruction(
+        name="st Z, Rr",
+        mask="1000 001r rrrr 0000",
+        parameters=[
+            AVRParameter(name="Rr", constraints="0<= <32"),
+        ]
+    ),
+
+    # POP - восстановление регистра из стека
+    AVRInstruction(
+        name="pop Rd",
+        mask="1001 000d dddd 1111",
+        parameters=[
+            AVRParameter(name="Rd", constraints="0<= <32"),
+        ]
+    ),
+    # ST (Y) с постинкрементом - Запись в память по адресу регистра Y с увеличением
+    AVRInstruction(
+        name="st Y+, Rr",
+        mask="1001 001r rrrr 1001",
+        parameters=[
+            AVRParameter(name="Rr", constraints="0<= <32"),
+        ]
+    ),
+
+    # LDD (Y+q) - Загрузка из памяти по адресу Y с добавлением смещения q
+    AVRInstruction(
+        name="ldd Rd, Y+q",
+        mask="10q0 qq0d dddd 1qqq",
+        parameters=[
+            AVRParameter(name="Rd", constraints="0<= <32"),
+            AVRParameter(name="q", constraints="0<= <63"),
+        ]
+    ),
+
+    # STD (Y+q) - Запись в память по адресу Y с добавлением смещения q
+    AVRInstruction(
+        name="std Y+q, Rr",
+        mask="10q0 qq1r rrrr 1qqq",
+        parameters=[
+            AVRParameter(name="Rr", constraints="0<= <32"),
+            AVRParameter(name="q", constraints="0<= <63"),
+        ]
+    ),
+
+    # MOVW - Копирование значений из пары регистров в пару регистров
+    AVRInstruction(
+        name="movw Rd, Rr",
+        mask="0000 0001 dddd rrrr",
+        parameters=[
+            AVRParameter(name="Rd", constraints="0<= <32"),
+            AVRParameter(name="Rr", constraints="0<= <32"),
+        ]
+    ),
+
+    # ELPM (Z) - Загрузка из расширенной памяти по адресу Z
+    AVRInstruction(
+        name="elpm Rd, Z",
+        mask="1001 000d dddd 0110",
+        parameters=[
+            AVRParameter(name="Rd", constraints="0<= <32"),
+        ]
+    ),
+
+    # ELPM (Z+) - Загрузка из расширенной памяти по адресу Z с увеличением
+    AVRInstruction(
+        name="elpm Rd, Z+",
+        mask="1001 000d dddd 0111",
+        parameters=[
+            AVRParameter(name="Rd", constraints="0<= <32"),
+        ]
+    ),
+
+    # LPM (Z) - Загрузка из программной памяти по адресу Z
+    AVRInstruction(
+        name="lpm Rd, Z",
+        mask="1001 000d dddd 0100",
+        parameters=[
+            AVRParameter(name="Rd", constraints="0<= <32"),
+        ]
+    ),
+
+    # LPM (Z+) - Загрузка из программной памяти по адресу Z с увеличением
+    AVRInstruction(
+        name="lpm Rd, Z+",
+        mask="1001 000d dddd 0101",
+        parameters=[
+            AVRParameter(name="Rd", constraints="0<= <32"),
+        ]
+    ),
+
+    # XCH - Обмен содержимого регистра и адресуемой памяти
+    AVRInstruction(
+        name="xch Rd, Z",
+        mask="1001 001d dddd 1010",
+        parameters=[
+            AVRParameter(name="Rd", constraints="0<= <32"),
+        ]
+    ),
+
+    # LDS - Загрузка из абсолютного адреса SRAM
+    AVRInstruction(
+        name="lds Rd, k",
+        mask="1001 000d dddd 0000 kkkk kkkk kkkk kkkk",
+        parameters=[
+            AVRParameter(name="Rd", constraints="0<= <32"),
+            AVRParameter(name="k", constraints="0<= <65536"),
+        ]
+    ),
+
+    # STS - Запись в абсолютный адрес SRAM
+    AVRInstruction(
+        name="sts k, Rr",
+        mask="1001 001r rrrr 0000 kkkk kkkk kkkk kkkk",
+        parameters=[
+            AVRParameter(name="Rr", constraints="0<= <32"),
+            AVRParameter(name="k", constraints="0<= <65536"),
+        ]
+    ),
+
 ]
 
 

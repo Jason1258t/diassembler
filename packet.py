@@ -1,11 +1,15 @@
 class Packet:
     def __init__(self, string: str):
         self._formated_string = string
+        self._initial_string = string
         self.start_address = self._get_start_address()
         self.bytes_length = self._get_bytes_length()
         self.data_type = self._get_data_type()
         self.string_data = self._get_string_data()
         self.control_sum = self._get_control_sum()
+
+    def initial_string(self):
+        return self._initial_string
 
     def get_data_binary(self):
         data = []

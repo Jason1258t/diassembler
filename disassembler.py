@@ -5,9 +5,12 @@ from packet import Packet
 class Disassembler:
     def parse(self, formated_string: str):
         self._parse_packets(formated_string)
+        self._next_packet_offset = 0
         total_commands = []
-        for p in self.packets:
-            a = self._parse_commands_from_packet(p)
+        for i in range(len(self.packets)):
+            p = self.packets[i]
+            np = self.packets[i + 1] if i < len(self.packets) - 1 else None
+            a = self._parse_commands_from_packet(p, np)
             total_commands += a
 
         return total_commands
@@ -17,12 +20,23 @@ class Disassembler:
         for i in formated_string.split('\n'):
             self.packets.append(Packet(i[1:]))
 
-    def _parse_commands_from_packet(self, packet: Packet):
+    def _parse_commands_from_packet(self, packet: Packet, next_packet: Packet | None):
         commands = []
-        data_bytes = packet.get_data_binary()
+        data_bytes = packet.get_data_binary()[self._next_packet_offset:]
+        if self._next_packet_offset != 0: self._next_packet_offset = 0
+        print(data_bytes, packet.initial_string())
         address = int(packet.start_address, 16)
         while len(data_bytes) != 0:
-            c, out = self._find_and_format_command(data_bytes, address)
+            try:
+                c, out = self._find_and_format_command(data_bytes, address)
+            except ValueError as e:
+                if len(data_bytes) < 8:
+                    data_bytes += next_packet.get_data_binary()[:4]
+                    c, out = self._find_and_format_command(data_bytes, address)
+                    self._next_packet_offset = 4
+                else:
+                    print(e)
+                    raise ValueError('cant find a command')
             commands.append(out)
             bytes_len = len(c.mask.split()) // 2
             address += bytes_len
@@ -33,7 +47,10 @@ class Disassembler:
     def _find_and_format_command(self, data_bytes, address):
         c, words = self._extract_first_command(data_bytes)
         p = CommandParser.extract_parameters(c, ' '.join(words))
-        result_parameters = CommandParser.get_result_parameters(c, p)
+        try:
+            result_parameters = CommandParser.get_result_parameters(c, p)
+        except:
+            print(c.name, p)
         return c, self._format_command_out(address, words, c, result_parameters)
 
     @staticmethod
@@ -43,8 +60,10 @@ class Disassembler:
         if c is None:
             words = data_bytes[:8]
             c = CommandParser.find_command(' '.join(words))
+
         if c is None:
-            print('Not found command with mask ', ' '.join(words))
+            raise ValueError('Not found command with mask ',
+                             ' '.join(words) + '; remains packet data: {0}'.format(data_bytes))
 
         return c, words
 
