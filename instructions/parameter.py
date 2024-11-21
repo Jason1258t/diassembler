@@ -37,6 +37,8 @@ class AVRParameter:
         '0xa': 'DDRD',
         '0xc': 'PORTD',
         '0x2c': 'SPCR',
+        '0x2e': 'SPDR',
+        '0x2d': 'SPSR',
         '0x3d': 'SPL',
         '0x3e': 'SPH',
         '0x3f': 'SREG',
