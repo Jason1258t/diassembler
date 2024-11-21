@@ -4,7 +4,7 @@ from packet import Packet
 
 class Disassembler:
     def parse(self, formated_string: str):
-        self._parse_packets(formated_string)
+        self._parse_packets(formated_string.strip())
         self._next_packet_offset = 0
         total_commands = []
         for i in range(len(self.packets)):
