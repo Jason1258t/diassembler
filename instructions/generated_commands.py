@@ -148,6 +148,15 @@ instructions = [
             AVRParameter(name="Rr", constraints="0< <32")
         ]
     ),
+    # ADC - сложение с переносом
+    AVRInstruction(
+        name="brbc s, k",
+        mask="1111 01kk kkkk ksss",
+        parameters=[
+            AVRParameter(name="s", constraints="0< <7"),
+            AVRParameter(name="k", constraints="0< <63", options='signed')
+        ]
+    ),
     # LSR - логический сдвиг вправо
     AVRInstruction(
         name="lsr Rd",
