@@ -34,8 +34,12 @@ class CommandParser:
         return parameters
 
     @staticmethod
-    def get_result_parameters(command: AVRInstruction, parameters):
+    def get_parameters_values_and_annotations(command: AVRInstruction, parameters, command_address):
+        annotations_list = []
+
         for p in command.parameters:
             parameters[p.name] = p.get_value(parameters[p.name])
+            if p.options == 'signed':
+                annotations_list.append(p.get_jump_annotation(command_address, parameters[p.name]))
 
-        return parameters
+        return parameters, annotations_list

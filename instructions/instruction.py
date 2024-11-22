@@ -7,8 +7,10 @@ class AVRInstruction:
         self.mask = mask
         self.parameters = parameters
 
-    def write_with_parameters(self, parameters: dict):
+    def write_with_parameters(self, parameters: dict, annotation: str):
         name = ' '.join(self.name.split()[1:])
         for p, v in parameters.items():
             name = name.replace(p, v)
         return self.name.split()[0] + ' ' + name
+
+

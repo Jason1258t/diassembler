@@ -8,6 +8,12 @@ class AVRParameter:
         if self.name[0] == 'R': return self.name[1:]
         return self.name
 
+    def get_jump_annotation(self, address: int, hex_value: str):
+        if self.options != 'signed':
+            return ''
+
+        return hex(address + 2 + int(hex_value, 16))
+
     def get_value(self, string):
         value: int
         add_symbols = ''

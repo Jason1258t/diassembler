@@ -47,10 +47,11 @@ class Disassembler:
         c, words = self._extract_first_command(data_bytes)
         p = CommandParser.extract_parameters(c, ' '.join(words))
         try:
-            result_parameters = CommandParser.get_result_parameters(c, p)
+            result_parameters, annotations = CommandParser.get_parameters_values_and_annotations(c, p, address)
+            return c, self._format_command_out(address, words, c, result_parameters, annotations)
         except:
             print(c.name, p)
-        return c, self._format_command_out(address, words, c, result_parameters)
+
 
     @staticmethod
     def _extract_first_command(data_bytes):
@@ -67,8 +68,11 @@ class Disassembler:
         return c, words
 
     @staticmethod
-    def _format_command_out(address, words, comm, parameters):
+    def _format_command_out(address, words, comm, parameters, annotations: list):
         address = hex(address)[2:].zfill(2)
         orig_bytes = Packet.get_original_bytes_from_words(words)
-        command_out = comm.write_with_parameters(parameters)
-        return address + ': ' + orig_bytes + ' ' + command_out
+        command_out = comm.write_with_parameters(parameters, annotations)
+
+        annotations_out = f' ; {" ".join(annotations)}' if len(annotations) != 0 else ''
+
+        return address + ': ' + orig_bytes + ' ' + command_out + annotations_out
