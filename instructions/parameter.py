@@ -35,7 +35,7 @@ class AVRParameter:
     special_registers = {
         '0x3': 'PINB',
         '0x4': 'DDRB',
-        '0x5': 'PORTC',
+        '0x5': 'PORTB',
         '0x6': 'PINC',
         '0x7': 'DDRC',
         '0x8': 'PORTC',
